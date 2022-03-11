@@ -1,0 +1,16 @@
+[
+  {
+    "type": "logical",
+    "operator": "AND",
+    "operands": [
+      {
+        "type": "comparison",
+        "operator": "==",
+        "operands": [
+          "gt.province",
+          100
+        ]
+      }
+    ]
+  }
+]
