@@ -11,7 +11,7 @@ func Test_OP(t *testing.T) {
 	data := AND(
 		OR(
 			CMP("=", FIELD("gt.level"), VAL(1)),
-			CMP("=", FIELD("gt.province"), VAL("04")),
+			CMP("=", FIELD("gt.province"), VAR("04", "hello")),
 			NOT(AND(
 				FIELD("gt.disable"),
 				FIELD("gt.inactive"),

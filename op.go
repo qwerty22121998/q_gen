@@ -1,49 +1,55 @@
 package q_gen
 
-import "q_gen/operator"
+import (
+	"q_gen/node"
+	"q_gen/operator"
+)
 
-func AND(op ...Node) Node {
-	return NodeOP{
-		Type:     Logical,
+func AND(op ...node.Node) node.Node {
+	return node.Operation{
+		Type:     node.Logical,
 		Operator: operator.AND,
 		Operands: op,
 	}
 }
 
-func OR(op ...Node) Node {
-	return NodeOP{
-		Type:     Logical,
+func OR(op ...node.Node) node.Node {
+	return node.Operation{
+		Type:     node.Logical,
 		Operator: operator.OR,
 		Operands: op,
 	}
 }
 
-func NOT(op Node) Node {
-	return NodeOP{
-		Type:     Logical,
+func NOT(op node.Node) node.Node {
+	return node.Operation{
+		Type:     node.Logical,
 		Operator: operator.NOT,
-		Operands: []Node{op},
+		Operands: []node.Node{op},
 	}
 }
 
-func CMP(op operator.Operator, value ...Node) Node {
-	return NodeOP{
-		Type:     Comparison,
+func CMP(op operator.Operator, value ...node.Node) node.Node {
+	return node.Operation{
+		Type:     node.Cmp,
 		Operator: op,
 		Operands: value,
 	}
 }
 
-func FIELD(name string) Node {
-	return NodeField(name)
+func FIELD(name string) node.Node {
+	return node.Field(name)
 }
 
-func VAR(name string) Node {
-	return NodeVariable(name)
+func VAR(name string, data interface{}) node.Node {
+	return &node.Variable{
+		Name: name,
+		Value: data,
+	}
 }
 
-func VAL(value interface{}) Node {
-	return NodeValue{
+func VAL(value interface{}) node.Node {
+	return node.Value{
 		Value: value,
 	}
 }
