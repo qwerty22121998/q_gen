@@ -11,6 +11,7 @@ const (
 	Logical    NodeType = "logical"
 	Comparison NodeType = "comparison"
 	Math       NodeType = "math"
+	Field      NodeType = "field"
 	Variable   NodeType = "var"
 	Value      NodeType = "value"
 )
@@ -39,6 +40,16 @@ func (NodeOP) T() NodeType {
 	return Logical
 }
 
+type NodeField string
+
+func (NodeField) T() NodeType {
+	return Field
+}
+
+func (n NodeField) String() string {
+	return fmt.Sprintf("`%v`", string(n))
+}
+
 type NodeVariable string
 
 func (NodeVariable) T() NodeType {
@@ -46,7 +57,7 @@ func (NodeVariable) T() NodeType {
 }
 
 func (n NodeVariable) String() string {
-	return string(n)
+	return "@" + string(n)
 }
 
 type NodeValue struct {

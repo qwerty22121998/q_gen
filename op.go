@@ -18,7 +18,7 @@ func OR(op ...Node) Node {
 	}
 }
 
-func Not(op Node) Node {
+func NOT(op Node) Node {
 	return NodeOP{
 		Type:     Logical,
 		Operator: operator.NOT,
@@ -32,6 +32,10 @@ func CMP(op operator.Operator, value ...Node) Node {
 		Operator: op,
 		Operands: value,
 	}
+}
+
+func FIELD(name string) Node {
+	return NodeField(name)
 }
 
 func VAR(name string) Node {
