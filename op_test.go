@@ -4,17 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"q_gen/node"
 	"testing"
 )
 
 func Test_OP(t *testing.T) {
-	data := AND(
-		OR(
-			CMP("=", FIELD("gt.level"), VAL(1)),
-			CMP("=", FIELD("gt.province"), VAR("04", "hello")),
-			NOT(AND(
-				FIELD("gt.disable"),
-				FIELD("gt.inactive"),
+	data := node.AND(
+		node.OR(
+			node.CMP("=", node.FIELD("gt.level"), node.VAL(1)),
+			node.CMP("=", node.FIELD("gt.province"), node.VAR("04", "hello")),
+			node.NOT(node.AND(
+				node.FIELD("gt.disable"),
+				node.FIELD("gt.inactive"),
 			),
 			),
 		),

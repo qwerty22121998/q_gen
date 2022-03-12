@@ -6,8 +6,8 @@ import (
 )
 
 type Tree struct {
-	head   Node
-	values []*Variable
+	Head   Node
+	Values []*Variable
 }
 
 type ValueMap map[string]interface{}
@@ -18,11 +18,10 @@ func (v ValueMap) Get(path string) (interface{}, error) {
 		return v[path], nil
 	}
 	return utils.ExtractPath(v[path], paths[1:])
-
 }
 
 func (t *Tree) FillData(data ValueMap) error {
-	for _, key := range t.values {
+	for _, key := range t.Values {
 		value, err := data.Get(key.Name)
 		if err != nil {
 			return err

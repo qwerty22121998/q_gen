@@ -5,7 +5,7 @@ import "q_gen/operator"
 type Operation struct {
 	Type     Type              `json:"type"`
 	Operator operator.Operator `json:"operator"`
-	Operands []Node            `json:"operands"`
+	Operands Group             `json:"operands"`
 }
 
 func (n Operation) String() string {
