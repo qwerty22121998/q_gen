@@ -2,12 +2,15 @@ package node
 
 import "fmt"
 
-type Field string
+type Field struct {
+	Type Type   `json:"type"`
+	Name string `json:"name"`
+}
 
 func (Field) T() Type {
 	return Target
 }
 
 func (n Field) String() string {
-	return fmt.Sprintf("`%v`", string(n))
+	return fmt.Sprintf("`%v`", n.Name)
 }

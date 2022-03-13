@@ -2,19 +2,26 @@ package node
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"q_gen/operator"
 	"reflect"
+	"strings"
 )
 
 var (
-	ErrInvalidOperator = func(op interface{}) error { return fmt.Errorf("invalid operator %v", op) }
-	ErrInvalidOperand  = func(op interface{}) error { return fmt.Errorf("invalid operands %v", op) }
-	ErrInvalidType     = func(op interface{}) error { return fmt.Errorf("invalid type %v", op) }
+	ErrInvalidOperator  = func(op interface{}) error { return fmt.Errorf("invalid operator %v", op) }
+	ErrInvalidOperand   = func(op interface{}) error { return fmt.Errorf("invalid operands %v", op) }
+	ErrInvalidType      = func(op interface{}) error { return fmt.Errorf("invalid type %v", op) }
+	ErrMissingFieldName = errors.New("missing field name")
 )
 
 func Parse(raw string) (*Tree, error) {
-	t := &Tree{}
+	t := &Tree{
+		head:   nil,
+		Values: nil,
+		Joins:  make(map[string]joinTable),
+	}
 	if err := t.Parse(raw); err != nil {
 		return nil, err
 	}
@@ -30,8 +37,19 @@ func (t *Tree) Parse(raw string) error {
 	if err != nil {
 		return err
 	}
-	t.Head = head
+	t.head = head
 	return nil
+}
+
+func (t *Tree) addJoin(name string) {
+	field := strings.SplitN(name, ".", 2)
+	if len(field) == 1 {
+		return
+	}
+	t.Joins[field[0]] = joinTable{
+		Alias: field[0],
+		Type:  "INNER",
+	}
 }
 
 func (t *Tree) parse(v interface{}) (Node, error) {
@@ -58,6 +76,20 @@ func (t *Tree) parse(v interface{}) (Node, error) {
 		return group, nil
 	case reflect.Map:
 		mp, _ := v.(map[string]interface{})
+		nType, ok := mp["type"].(string)
+		if !ok {
+			return nil, ErrInvalidType(mp["type"])
+		}
+
+		if Type(nType) == Table {
+			name, ok := mp["type"].(string)
+			if !ok {
+				return nil, ErrMissingFieldName
+			}
+			t.addJoin(name)
+			return FIELD(name), nil
+		}
+
 		op, ok := mp["operator"].(string)
 		if !ok {
 			return nil, ErrInvalidOperator(mp["operator"])
@@ -66,10 +98,7 @@ func (t *Tree) parse(v interface{}) (Node, error) {
 		if !ok {
 			return nil, ErrInvalidOperand(mp["operands"])
 		}
-		nType, ok := mp["type"].(string)
-		if !ok {
-			return nil, ErrInvalidType(mp["operands"])
-		}
+
 		if reflect.TypeOf(data).Kind() != reflect.Slice {
 			return nil, ErrInvalidOperand(data)
 		}

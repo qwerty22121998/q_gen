@@ -5,9 +5,15 @@ import (
 	"strings"
 )
 
+type joinTable struct {
+	Alias string
+	Type  string
+}
+
 type Tree struct {
-	Head   Node
+	head   Node
 	Values []*Variable
+	Joins  map[string]joinTable
 }
 
 type ValueMap map[string]interface{}
@@ -29,4 +35,8 @@ func (t *Tree) FillData(data ValueMap) error {
 		key.Value = value
 	}
 	return nil
+}
+
+func (t *Tree) String() string {
+	return t.head.String()
 }

@@ -37,7 +37,10 @@ func CMP(op operator.Operator, value ...Node) Node {
 }
 
 func FIELD(name string) Node {
-	return Field(name)
+	return Field{
+		Type: Table,
+		Name: name,
+	}
 }
 
 func VAR(name string, data interface{}) Node {

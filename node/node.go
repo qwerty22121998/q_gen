@@ -10,6 +10,7 @@ const (
 	Var     Type = "var"
 	Val     Type = "value"
 	Many    Type = "many"
+	Table   Type = "table"
 )
 
 type Node interface {
