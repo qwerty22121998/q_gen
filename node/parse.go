@@ -18,9 +18,10 @@ var (
 
 func Parse(raw string) (*Tree, error) {
 	t := &Tree{
-		head:   nil,
-		Values: nil,
-		Joins:  make(map[string]joinTable),
+		head:    nil,
+		Values:  nil,
+		joinMap: make(map[string]Join),
+		joins:   make(map[string]bool),
 	}
 	if err := t.Parse(raw); err != nil {
 		return nil, err
@@ -46,10 +47,7 @@ func (t *Tree) addJoin(name string) {
 	if len(field) == 1 {
 		return
 	}
-	t.Joins[field[0]] = joinTable{
-		Alias: field[0],
-		Type:  "INNER",
-	}
+	t.joins[field[0]] = true
 }
 
 func (t *Tree) parse(v interface{}) (Node, error) {
@@ -82,7 +80,7 @@ func (t *Tree) parse(v interface{}) (Node, error) {
 		}
 
 		if Type(nType) == Table {
-			name, ok := mp["type"].(string)
+			name, ok := mp["name"].(string)
 			if !ok {
 				return nil, ErrMissingFieldName
 			}

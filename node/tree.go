@@ -5,15 +5,16 @@ import (
 	"strings"
 )
 
-type joinTable struct {
+type Join struct {
 	Alias string
 	Type  string
 }
 
 type Tree struct {
-	head   Node
-	Values []*Variable
-	Joins  map[string]joinTable
+	head    Node
+	Values  []*Variable
+	joins   map[string]bool
+	joinMap map[string]Join
 }
 
 type ValueMap map[string]interface{}
@@ -24,6 +25,10 @@ func (v ValueMap) Get(path string) (interface{}, error) {
 		return v[path], nil
 	}
 	return utils.ExtractPath(v[path], paths[1:])
+}
+
+func (t *Tree) SetJoinMap(joinMap map[string]Join) {
+	t.joinMap = joinMap
 }
 
 func (t *Tree) FillData(data ValueMap) error {
@@ -38,5 +43,16 @@ func (t *Tree) FillData(data ValueMap) error {
 }
 
 func (t *Tree) String() string {
-	return t.head.String()
+	b := strings.Builder{}
+	for name := range t.joins {
+		joinOp := t.joinMap[name]
+		b.WriteString(joinOp.Type)
+		b.WriteString(" JOIN `")
+		b.WriteString(joinOp.Alias)
+		b.WriteString("` as `")
+		b.WriteString(name)
+		b.WriteString("` ")
+	}
+
+	return b.String() + t.head.String()
 }
